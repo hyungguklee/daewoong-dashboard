@@ -24,10 +24,10 @@ if (existsSync(join(root, 'netlify', 'functions'))) {
 }
 
 // === Cloudflare 새 통합 시스템 (Workers + Static Assets)용 ===
-// _worker.js를 dist 루트로 복사 → 단일 진입점으로 /api/* 라우팅
-if (existsSync(join(root, '_worker.js'))) {
-  copyFileSync(join(root, '_worker.js'), join(dist, '_worker.js'));
-}
+// _worker.js는 dist 밖(프로젝트 루트)에 두고 wrangler.jsonc의 main이 직접 가리킴
+// → dist는 순수 정적 자산만 (security 경고 회피)
+import { writeFileSync } from 'fs';
+writeFileSync(join(dist, '.assetsignore'), '_worker.js\n_routes.json\n');
 // === 구 Cloudflare Pages용 (호환) ===
 if (existsSync(join(root, 'functions'))) {
   const cfDest = join(dist, 'functions');
