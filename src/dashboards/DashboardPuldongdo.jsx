@@ -263,12 +263,12 @@ export default function DashboardPuldongdo({ isAdmin, period }) {
         <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', paddingBottom: 18, borderBottom: '2px solid #1A1F2C', marginBottom: 32, flexWrap: 'wrap', gap: 12 }}>
           <div>
             <div style={{ fontSize: 10, letterSpacing: '.18em', color: '#6B7280', fontWeight: 600, marginBottom: 8 }}>{tab.eyebrow}</div>
-            <h1 style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 30, fontWeight: 800, letterSpacing: '-.015em', lineHeight: 1.1 }}>
+            <h1 style={{ fontFamily: "'Pretendard Variable', 'Pretendard', sans-serif", fontSize: 30, fontWeight: 800, letterSpacing: '-.015em', lineHeight: 1.1 }}>
               {tab.title} <span style={{ fontWeight: 300, color: '#4B5563' }}>리포트</span>
             </h1>
           </div>
           <div style={{ textAlign: 'right' }}>
-            <div style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 24, fontWeight: 700, letterSpacing: '-.01em' }}>{period}</div>
+            <div style={{ fontFamily: "'Pretendard Variable', 'Pretendard', sans-serif", fontSize: 24, fontWeight: 700, letterSpacing: '-.01em' }}>{period}</div>
             <div style={{ fontSize: 11, color: '#6B7280', marginTop: 4 }}>
               {tab.label === '병원' ? '확인율 S 80%↑ · 일치율 S 50%↑' : '확인율 S 80%↑ · 일치율 S 60%↑'}
             </div>
@@ -288,7 +288,7 @@ export default function DashboardPuldongdo({ isAdmin, period }) {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 16, flexWrap: 'wrap', gap: 8 }}>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
                   <span style={{ fontSize: 11, color: '#9CA3AF', fontWeight: 700, letterSpacing: '.05em' }}>01</span>
-                  <h2 style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 18, fontWeight: 700 }}>본부 현황</h2>
+                  <h2 style={{ fontFamily: "'Pretendard Variable', 'Pretendard', sans-serif", fontSize: 18, fontWeight: 700 }}>본부 현황</h2>
                 </div>
                 <div style={{ fontSize: 11, color: '#6B7280' }}>
                   {tab.label} 전사 종합 / {offices.length}개 사무소 · 평가 {total?.evalCount}명 · {tab.itemLabel} {fmtNum(total?.itemCount)}
@@ -301,17 +301,17 @@ export default function DashboardPuldongdo({ isAdmin, period }) {
                   <span style={{ fontSize: 13, color: 'rgba(255,255,255,.6)' }}>등급</span>
                 </KpiCard>
                 <KpiCard label="약속율" note={`약속 ${fmtMoney(total?.commitTotal)} / MBO ${fmtMoney(total?.mbo)}`}>
-                  <span style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 32, fontWeight: 800, color: '#1A1F2C', letterSpacing: '-.025em', lineHeight: 1 }}>
+                  <span style={{ fontFamily: "'Pretendard Variable', 'Pretendard', sans-serif", fontSize: 32, fontWeight: 800, color: '#1A1F2C', letterSpacing: '-.025em', lineHeight: 1 }}>
                     {pctStr(total?.commitRate)}
                   </span>
                 </KpiCard>
                 <KpiCard label="확인율" note={`확인 ${fmtMoney(total?.confirmTotal)} · 등급 ${total?.confirmGrade || '-'}`}>
-                  <span style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 32, fontWeight: 800, color: gradeColor(total?.confirmGrade).fg, letterSpacing: '-.025em', lineHeight: 1 }}>
+                  <span style={{ fontFamily: "'Pretendard Variable', 'Pretendard', sans-serif", fontSize: 32, fontWeight: 800, color: gradeColor(total?.confirmGrade).fg, letterSpacing: '-.025em', lineHeight: 1 }}>
                     {pctStr(total?.confirmRate)}
                   </span>
                 </KpiCard>
                 <KpiCard label="확인 일치율" note={`등급 ${total?.matchGrade || '-'}`}>
-                  <span style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 32, fontWeight: 800, color: gradeColor(total?.matchGrade).fg, letterSpacing: '-.025em', lineHeight: 1 }}>
+                  <span style={{ fontFamily: "'Pretendard Variable', 'Pretendard', sans-serif", fontSize: 32, fontWeight: 800, color: gradeColor(total?.matchGrade).fg, letterSpacing: '-.025em', lineHeight: 1 }}>
                     {pctStr(total?.matchRate)}
                   </span>
                 </KpiCard>
@@ -326,7 +326,7 @@ export default function DashboardPuldongdo({ isAdmin, period }) {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 16, flexWrap: 'wrap', gap: 8 }}>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
                   <span style={{ fontSize: 11, color: '#9CA3AF', fontWeight: 700, letterSpacing: '.05em' }}>02</span>
-                  <h2 style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 18, fontWeight: 700 }}>사무소 평가</h2>
+                  <h2 style={{ fontFamily: "'Pretendard Variable', 'Pretendard', sans-serif", fontSize: 18, fontWeight: 700 }}>사무소 평가</h2>
                 </div>
                 <div style={{ fontSize: 11, color: '#6B7280' }}>
                   {offices.length}개 사무소 · 최종등급 내림차순

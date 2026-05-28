@@ -88,17 +88,17 @@ function BizCard({ div, mainLabel }) {
         <span style={{ fontSize: 9, color: '#9CA3AF', fontWeight: 700, letterSpacing: '.05em' }}>최종</span>
         <GradeBadge grade={div.finalGrade} size="lg" />
       </div>
-      <div style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 22, fontWeight: 800, letterSpacing: '-.015em', marginBottom: 2 }}>
+      <div style={{ fontFamily: "'Pretendard Variable', 'Pretendard', sans-serif", fontSize: 22, fontWeight: 800, letterSpacing: '-.015em', marginBottom: 2 }}>
         {div.name}
       </div>
       <div style={{ fontSize: 11, color: '#6B7280', marginBottom: 14 }}>
         {div.manager || '-'} · MBO {fmtNum(div.mbo)}
       </div>
       <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 4 }}>
-        <span style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 28, fontWeight: 800, color: gradeColor(div.mainGrade).fg, letterSpacing: '-.025em', lineHeight: 1 }}>
+        <span style={{ fontFamily: "'Pretendard Variable', 'Pretendard', sans-serif", fontSize: 28, fontWeight: 800, color: gradeColor(div.mainGrade).fg, letterSpacing: '-.025em', lineHeight: 1 }}>
           {(div.mainRate * 100).toFixed(1)}
         </span>
-        <span style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 14, fontWeight: 600, color: gradeColor(div.mainGrade).fg }}>%</span>
+        <span style={{ fontFamily: "'Pretendard Variable', 'Pretendard', sans-serif", fontSize: 14, fontWeight: 600, color: gradeColor(div.mainGrade).fg }}>%</span>
         <span style={{ fontSize: 10, color: '#6B7280', marginLeft: 4 }}>{mainLabel}</span>
         <GradeBadge grade={div.mainGrade} size="sm" />
       </div>
@@ -435,12 +435,12 @@ export default function DashboardMBO({ isAdmin, period }) {
         <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', paddingBottom: 18, borderBottom: '2px solid #1A1F2C', marginBottom: 32, flexWrap: 'wrap', gap: 12 }}>
           <div>
             <div style={{ fontSize: 10, letterSpacing: '.18em', color: '#6B7280', fontWeight: 600, marginBottom: 8 }}>{tab.eyebrow}</div>
-            <h1 style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 30, fontWeight: 800, letterSpacing: '-.015em', lineHeight: 1.1 }}>
+            <h1 style={{ fontFamily: "'Pretendard Variable', 'Pretendard', sans-serif", fontSize: 30, fontWeight: 800, letterSpacing: '-.015em', lineHeight: 1.1 }}>
               {tab.title} <span style={{ fontWeight: 300, color: '#4B5563' }}>리포트</span>
             </h1>
           </div>
           <div style={{ textAlign: 'right' }}>
-            <div style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 24, fontWeight: 700, letterSpacing: '-.01em' }}>{period}</div>
+            <div style={{ fontFamily: "'Pretendard Variable', 'Pretendard', sans-serif", fontSize: 24, fontWeight: 700, letterSpacing: '-.01em' }}>{period}</div>
             <div style={{ fontSize: 11, color: '#6B7280', marginTop: 4 }}>※ S 50%↑ / A 35%↑ / B 20%↑ / C 20%↓</div>
           </div>
         </header>
@@ -458,7 +458,7 @@ export default function DashboardMBO({ isAdmin, period }) {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 16, flexWrap: 'wrap', gap: 8 }}>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
                   <span style={{ fontSize: 11, color: '#9CA3AF', fontWeight: 700, letterSpacing: '.05em' }}>01</span>
-                  <h2 style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 18, fontWeight: 700 }}>본부 현황</h2>
+                  <h2 style={{ fontFamily: "'Pretendard Variable', 'Pretendard', sans-serif", fontSize: 18, fontWeight: 700 }}>본부 현황</h2>
                 </div>
                 <div style={{ fontSize: 11, color: '#6B7280' }}>
                   {tab.label} 전사 종합 / {mainDivisions.length}개 사업부 · {mainOffices.length}개 사무소 · MR {mrs.length}명
@@ -467,7 +467,7 @@ export default function DashboardMBO({ isAdmin, period }) {
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
                 <KpiCard label={`전체 ${tab.mainLabel}`} core coreLabel="CORE KPI" note={`MBO ${fmtNum(total?.mbo)}억 · ${tab.mainShort} ${fmtNum(total?.commit)}억`}>
-                  <span style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 32, fontWeight: 800, color: '#34D399', letterSpacing: '-.025em', lineHeight: 1 }}>
+                  <span style={{ fontFamily: "'Pretendard Variable', 'Pretendard', sans-serif", fontSize: 32, fontWeight: 800, color: '#34D399', letterSpacing: '-.025em', lineHeight: 1 }}>
                     {pctStr(total?.mainRate)}
                   </span>
                 </KpiCard>
@@ -476,12 +476,12 @@ export default function DashboardMBO({ isAdmin, period }) {
                   <span style={{ fontSize: 12, color: '#9CA3AF' }}>등급</span>
                 </KpiCard>
                 <KpiCard label="확인율" note={`확인 ${fmtNum(total?.confirm)}억 · 등급 ${total?.confirmGrade || '-'}`}>
-                  <span style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 32, fontWeight: 800, color: gradeColor(total?.confirmGrade).fg, letterSpacing: '-.025em', lineHeight: 1 }}>
+                  <span style={{ fontFamily: "'Pretendard Variable', 'Pretendard', sans-serif", fontSize: 32, fontWeight: 800, color: gradeColor(total?.confirmGrade).fg, letterSpacing: '-.025em', lineHeight: 1 }}>
                     {pctStr(total?.confirmRate)}
                   </span>
                 </KpiCard>
                 <KpiCard label="일치율 / 오차율" note={`일치 등급 ${total?.matchGrade || '-'}`}>
-                  <span style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 28, fontWeight: 800, color: gradeColor(total?.matchGrade).fg, letterSpacing: '-.025em', lineHeight: 1 }}>
+                  <span style={{ fontFamily: "'Pretendard Variable', 'Pretendard', sans-serif", fontSize: 28, fontWeight: 800, color: gradeColor(total?.matchGrade).fg, letterSpacing: '-.025em', lineHeight: 1 }}>
                     {pctStr(total?.matchRate)}
                   </span>
                   <span style={{ fontSize: 12, color: '#9CA3AF' }}>/ {pctStr(total?.errorRate)}</span>
@@ -497,7 +497,7 @@ export default function DashboardMBO({ isAdmin, period }) {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 16, flexWrap: 'wrap', gap: 8 }}>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
                   <span style={{ fontSize: 11, color: '#9CA3AF', fontWeight: 700, letterSpacing: '.05em' }}>02</span>
-                  <h2 style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 18, fontWeight: 700 }}>사업부 평가</h2>
+                  <h2 style={{ fontFamily: "'Pretendard Variable', 'Pretendard', sans-serif", fontSize: 18, fontWeight: 700 }}>사업부 평가</h2>
                 </div>
                 <div style={{ fontSize: 11, color: '#6B7280' }}>
                   {mainDivisions.length}개 사업부 · 최종등급 내림차순
@@ -516,7 +516,7 @@ export default function DashboardMBO({ isAdmin, period }) {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 16, flexWrap: 'wrap', gap: 8 }}>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
                   <span style={{ fontSize: 11, color: '#9CA3AF', fontWeight: 700, letterSpacing: '.05em' }}>03</span>
-                  <h2 style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 18, fontWeight: 700 }}>사무소 평가</h2>
+                  <h2 style={{ fontFamily: "'Pretendard Variable', 'Pretendard', sans-serif", fontSize: 18, fontWeight: 700 }}>사무소 평가</h2>
                 </div>
                 <div style={{ fontSize: 11, color: '#6B7280' }}>
                   {mainOffices.length}개 사무소 · 최종등급 내림차순 · 사무소명 클릭 → MR 상세

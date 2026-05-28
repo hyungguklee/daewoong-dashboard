@@ -154,7 +154,7 @@ export default function DashboardHome({ period, onTaskChange, onAdminClick, isAd
 
             <div style={{ marginTop: 18 }}>
               <h1 style={{
-                fontFamily: "'Noto Serif KR', serif",
+                fontFamily: "'Pretendard Variable', 'Pretendard', sans-serif",
                 fontSize: 44, fontWeight: 800, letterSpacing: '-.025em',
                 lineHeight: 1.05, marginBottom: 8,
               }}>{period}</h1>
@@ -203,7 +203,7 @@ export default function DashboardHome({ period, onTaskChange, onAdminClick, isAd
       <section>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 14 }}>
           <h2 style={{
-            fontFamily: "'Noto Serif KR', serif",
+            fontFamily: "'Pretendard Variable', 'Pretendard', sans-serif",
             fontSize: 22, fontWeight: 800, letterSpacing: '-.02em',
           }}>평가 과제</h2>
           <div style={{ fontSize: 12, color: '#6B7280' }}>
@@ -300,7 +300,7 @@ function TaskCard({ task, data, period, getPeriodData, onClick }) {
 
         {/* 과제명 */}
         <div style={{
-          fontFamily: "'Noto Serif KR', serif",
+          fontFamily: "'Pretendard Variable', 'Pretendard', sans-serif",
           fontSize: 22, fontWeight: 800, letterSpacing: '-.015em',
           color: '#111', marginBottom: 4,
         }}>{task.name}</div>

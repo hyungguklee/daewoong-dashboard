@@ -324,12 +324,12 @@ export default function DashboardPerformance({ isAdmin, period, type = 'local' }
         <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', paddingBottom: 18, borderBottom: '2px solid #1A1F2C', marginBottom: 32, flexWrap: 'wrap', gap: 12 }}>
           <div>
             <div style={{ fontSize: 10, letterSpacing: '.18em', color: '#6B7280', fontWeight: 600, marginBottom: 8 }}>{tab.eyebrow}</div>
-            <h1 style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 30, fontWeight: 800, letterSpacing: '-.015em', lineHeight: 1.1 }}>
+            <h1 style={{ fontFamily: "'Pretendard Variable', 'Pretendard', sans-serif", fontSize: 30, fontWeight: 800, letterSpacing: '-.015em', lineHeight: 1.1 }}>
               {tab.title} <span style={{ fontWeight: 300, color: '#4B5563' }}>리포트</span>
             </h1>
           </div>
           <div style={{ textAlign: 'right' }}>
-            <div style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 24, fontWeight: 700, letterSpacing: '-.01em' }}>{period}</div>
+            <div style={{ fontFamily: "'Pretendard Variable', 'Pretendard', sans-serif", fontSize: 24, fontWeight: 700, letterSpacing: '-.01em' }}>{period}</div>
             <div style={{ fontSize: 11, color: '#6B7280', marginTop: 4 }}>50% 품목 기준점 적용 · 성장평가품목 반영</div>
           </div>
         </header>
@@ -349,20 +349,20 @@ export default function DashboardPerformance({ isAdmin, period, type = 'local' }
               <SecHead num="01" title="본부 현황" sub={`${tab.label} 전사 종합 / ${mainDivisions.length}개 사업부 · ${offices.length}개 사무소 · 담당자 ${reps.length}명`} />
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
                 <KpiCard label="최종실적 (50% 기준)" core coreLabel="CORE KPI" note={`기준점 ${money(total?.base)} 대비`}>
-                  <span style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 30, fontWeight: 800, color: '#34D399', letterSpacing: '-.025em', lineHeight: 1 }}>{money(total?.sales)}</span>
+                  <span style={{ fontFamily: "'Pretendard Variable', 'Pretendard', sans-serif", fontSize: 30, fontWeight: 800, color: '#34D399', letterSpacing: '-.025em', lineHeight: 1 }}>{money(total?.sales)}</span>
                 </KpiCard>
                 <KpiCard label="성장률" valueColor={growthColor(total?.growthRate)} note={`${mainDivisions.length}개 사업부 종합`}>
-                  <span style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 32, fontWeight: 800, color: growthColor(total?.growthRate), letterSpacing: '-.025em', lineHeight: 1 }}>
+                  <span style={{ fontFamily: "'Pretendard Variable', 'Pretendard', sans-serif", fontSize: 32, fontWeight: 800, color: growthColor(total?.growthRate), letterSpacing: '-.025em', lineHeight: 1 }}>
                     {total?.growthRate >= 0 ? '+' : ''}{pctStr(total?.growthRate)}
                   </span>
                 </KpiCard>
                 <KpiCard label="성장금액" note="최종실적 - 기준점">
-                  <span style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 28, fontWeight: 800, color: growthColor(total?.growth), letterSpacing: '-.025em', lineHeight: 1 }}>
+                  <span style={{ fontFamily: "'Pretendard Variable', 'Pretendard', sans-serif", fontSize: 28, fontWeight: 800, color: growthColor(total?.growth), letterSpacing: '-.025em', lineHeight: 1 }}>
                     {total?.growth >= 0 ? '+' : ''}{money(total?.growth)}
                   </span>
                 </KpiCard>
                 <KpiCard label="기준점" note="50% 품목 기준점">
-                  <span style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 28, fontWeight: 800, color: INK, letterSpacing: '-.025em', lineHeight: 1 }}>{money(total?.base)}</span>
+                  <span style={{ fontFamily: "'Pretendard Variable', 'Pretendard', sans-serif", fontSize: 28, fontWeight: 800, color: INK, letterSpacing: '-.025em', lineHeight: 1 }}>{money(total?.base)}</span>
                 </KpiCard>
               </div>
             </section>
@@ -466,7 +466,7 @@ function SecHead({ num, title, sub }) {
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 16, flexWrap: 'wrap', gap: 8 }}>
       <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
         <span style={{ fontSize: 11, color: '#9CA3AF', fontWeight: 700, letterSpacing: '.05em' }}>{num}</span>
-        <h2 style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 18, fontWeight: 700 }}>{title}</h2>
+        <h2 style={{ fontFamily: "'Pretendard Variable', 'Pretendard', sans-serif", fontSize: 18, fontWeight: 700 }}>{title}</h2>
       </div>
       <div style={{ fontSize: 11, color: '#6B7280' }}>{sub}</div>
     </div>
@@ -497,9 +497,9 @@ function DivCard({ div }) {
   const c = growthColor(div.growthRate);
   return (
     <div style={{ border: '1px solid #E5E7EB', borderLeft: `3px solid ${c}`, borderRadius: 4, padding: '18px 18px 16px', background: '#fff', minHeight: 150 }}>
-      <div style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 22, fontWeight: 800, letterSpacing: '-.015em', marginBottom: 12 }}>{div.name}</div>
+      <div style={{ fontFamily: "'Pretendard Variable', 'Pretendard', sans-serif", fontSize: 22, fontWeight: 800, letterSpacing: '-.015em', marginBottom: 12 }}>{div.name}</div>
       <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 6 }}>
-        <span style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 28, fontWeight: 800, color: c, letterSpacing: '-.025em', lineHeight: 1 }}>
+        <span style={{ fontFamily: "'Pretendard Variable', 'Pretendard', sans-serif", fontSize: 28, fontWeight: 800, color: c, letterSpacing: '-.025em', lineHeight: 1 }}>
           {div.growthRate >= 0 ? '+' : ''}{pctStr(div.growthRate)}
         </span>
         <span style={{ fontSize: 10, color: '#6B7280', marginLeft: 4 }}>성장률</span>

@@ -92,17 +92,17 @@ function BizCard({ div }) {
         <span style={{ fontSize: 9, color: '#9CA3AF', fontWeight: 700, letterSpacing: '.05em' }}>최종</span>
         <GradeBadge grade={div.grade} size="lg" />
       </div>
-      <div style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 22, fontWeight: 800, letterSpacing: '-.015em', marginBottom: 2, paddingRight: 70 }}>
+      <div style={{ fontFamily: "'Pretendard Variable', 'Pretendard', sans-serif", fontSize: 22, fontWeight: 800, letterSpacing: '-.015em', marginBottom: 2, paddingRight: 70 }}>
         {div.division}
       </div>
       <div style={{ fontSize: 11, color: '#6B7280', marginBottom: 14 }}>
         {div.manager || '-'}
       </div>
       <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 4 }}>
-        <span style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 30, fontWeight: 800, color: c.fg, letterSpacing: '-.025em', lineHeight: 1 }}>
+        <span style={{ fontFamily: "'Pretendard Variable', 'Pretendard', sans-serif", fontSize: 30, fontWeight: 800, color: c.fg, letterSpacing: '-.025em', lineHeight: 1 }}>
           {(div.achieveRate * 100).toFixed(1)}
         </span>
-        <span style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 14, fontWeight: 600, color: c.fg }}>%</span>
+        <span style={{ fontFamily: "'Pretendard Variable', 'Pretendard', sans-serif", fontSize: 14, fontWeight: 600, color: c.fg }}>%</span>
         <span style={{ fontSize: 10, color: '#6B7280', marginLeft: 4 }}>달성률</span>
       </div>
       <div style={{ borderTop: '1px solid #F3F4F6', paddingTop: 10, marginTop: 10, display: 'flex', flexDirection: 'column', gap: 5, fontSize: 11 }}>
@@ -410,12 +410,12 @@ export default function DashboardDirectTrade({ isAdmin, period }) {
         <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', paddingBottom: 18, borderBottom: '2px solid #1A1F2C', marginBottom: 32, flexWrap: 'wrap', gap: 12 }}>
           <div>
             <div style={{ fontSize: 10, letterSpacing: '.18em', color: '#6B7280', fontWeight: 600, marginBottom: 8 }}>{tab.eyebrow}</div>
-            <h1 style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 30, fontWeight: 800, letterSpacing: '-.015em', lineHeight: 1.1 }}>
+            <h1 style={{ fontFamily: "'Pretendard Variable', 'Pretendard', sans-serif", fontSize: 30, fontWeight: 800, letterSpacing: '-.015em', lineHeight: 1.1 }}>
               {tab.title} <span style={{ fontWeight: 300, color: '#4B5563' }}>리포트</span>
             </h1>
           </div>
           <div style={{ textAlign: 'right' }}>
-            <div style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 24, fontWeight: 700, letterSpacing: '-.01em' }}>{period}</div>
+            <div style={{ fontFamily: "'Pretendard Variable', 'Pretendard', sans-serif", fontSize: 24, fontWeight: 700, letterSpacing: '-.01em' }}>{period}</div>
             <div style={{ fontSize: 11, color: '#6B7280', marginTop: 4 }}>달성률 S 100%↑ / A 75%↑ / B 50%↑ / C 50%↓</div>
           </div>
         </header>
@@ -433,7 +433,7 @@ export default function DashboardDirectTrade({ isAdmin, period }) {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 16, flexWrap: 'wrap', gap: 8 }}>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
                   <span style={{ fontSize: 11, color: '#9CA3AF', fontWeight: 700, letterSpacing: '.05em' }}>01</span>
-                  <h2 style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 18, fontWeight: 700 }}>본부 현황</h2>
+                  <h2 style={{ fontFamily: "'Pretendard Variable', 'Pretendard', sans-serif", fontSize: 18, fontWeight: 700 }}>본부 현황</h2>
                 </div>
                 <div style={{ fontSize: 11, color: '#6B7280' }}>
                   {tab.label} 전사 종합 / {mainDivisions.length}개 사업부 · {offices.length}개 사무소 · MR {mrs.length}명
@@ -446,17 +446,17 @@ export default function DashboardDirectTrade({ isAdmin, period }) {
                   <span style={{ fontSize: 13, color: 'rgba(255,255,255,.6)' }}>등급</span>
                 </KpiCard>
                 <KpiCard label="3월 마감 매출" note={`기준점 ${fmtMoney(total?.baseAmount)} 대비`}>
-                  <span style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 28, fontWeight: 800, color: '#1A1F2C', letterSpacing: '-.025em', lineHeight: 1 }}>
+                  <span style={{ fontFamily: "'Pretendard Variable', 'Pretendard', sans-serif", fontSize: 28, fontWeight: 800, color: '#1A1F2C', letterSpacing: '-.025em', lineHeight: 1 }}>
                     {fmtMoney(total?.salesAmount)}
                   </span>
                 </KpiCard>
                 <KpiCard label="목표 달성률" note={`성장금액 ${fmtMoney(total?.growthAmount)} / 목표 ${fmtMoney(total?.growthGoal)}`} valueColor={gradeColor(total?.grade).fg}>
-                  <span style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 32, fontWeight: 800, color: gradeColor(total?.grade).fg, letterSpacing: '-.025em', lineHeight: 1 }}>
+                  <span style={{ fontFamily: "'Pretendard Variable', 'Pretendard', sans-serif", fontSize: 32, fontWeight: 800, color: gradeColor(total?.grade).fg, letterSpacing: '-.025em', lineHeight: 1 }}>
                     {pctStr(total?.achieveRate)}
                   </span>
                 </KpiCard>
                 <KpiCard label="가동률 (대상처/주문처)" note={`${fmtNum(total?.activeCount)} / ${fmtNum(total?.targetCount)} 거래처`}>
-                  <span style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 32, fontWeight: 800, color: '#1A1F2C', letterSpacing: '-.025em', lineHeight: 1 }}>
+                  <span style={{ fontFamily: "'Pretendard Variable', 'Pretendard', sans-serif", fontSize: 32, fontWeight: 800, color: '#1A1F2C', letterSpacing: '-.025em', lineHeight: 1 }}>
                     {pctStr(total?.activeRate)}
                   </span>
                 </KpiCard>
@@ -471,7 +471,7 @@ export default function DashboardDirectTrade({ isAdmin, period }) {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 16, flexWrap: 'wrap', gap: 8 }}>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
                   <span style={{ fontSize: 11, color: '#9CA3AF', fontWeight: 700, letterSpacing: '.05em' }}>02</span>
-                  <h2 style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 18, fontWeight: 700 }}>사업부 평가</h2>
+                  <h2 style={{ fontFamily: "'Pretendard Variable', 'Pretendard', sans-serif", fontSize: 18, fontWeight: 700 }}>사업부 평가</h2>
                 </div>
                 <div style={{ fontSize: 11, color: '#6B7280' }}>
                   {mainDivisions.length}개 사업부 · 최종등급 내림차순
@@ -487,7 +487,7 @@ export default function DashboardDirectTrade({ isAdmin, period }) {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 16, flexWrap: 'wrap', gap: 8 }}>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
                   <span style={{ fontSize: 11, color: '#9CA3AF', fontWeight: 700, letterSpacing: '.05em' }}>03</span>
-                  <h2 style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 18, fontWeight: 700 }}>사무소 평가</h2>
+                  <h2 style={{ fontFamily: "'Pretendard Variable', 'Pretendard', sans-serif", fontSize: 18, fontWeight: 700 }}>사무소 평가</h2>
                 </div>
                 <div style={{ fontSize: 11, color: '#6B7280' }}>
                   {offices.length}개 사무소 · 최종등급 내림차순 · 사무소명 클릭 → MR 상세

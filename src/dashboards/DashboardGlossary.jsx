@@ -169,7 +169,7 @@ export default function DashboardGlossary({ isAdmin }) {
         {/* 헤더 */}
         <div style={{ textAlign: 'center', marginBottom: 24 }}>
           <div style={{ fontSize: 10, letterSpacing: '.18em', color: '#6B7280', fontWeight: 600, marginBottom: 8 }}>SALES PLANNING · GLOSSARY</div>
-          <h1 style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 30, fontWeight: 800, letterSpacing: '-.02em' }}>
+          <h1 style={{ fontFamily: "'Pretendard Variable', 'Pretendard', sans-serif", fontSize: 30, fontWeight: 800, letterSpacing: '-.02em' }}>
             영업기획팀 용어사전
           </h1>
           {data && (

@@ -123,7 +123,7 @@ export default function DashboardHospitalInfo({ isAdmin }) {
         {/* 헤더 */}
         <div style={{ textAlign: 'center', marginBottom: 24 }}>
           <div style={{ fontSize: 10, letterSpacing: '.18em', color: '#6B7280', fontWeight: 600, marginBottom: 8 }}>HIRA · HOSPITAL SEARCH</div>
-          <h1 style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 30, fontWeight: 800, letterSpacing: '-.02em' }}>병의원 정보 검색</h1>
+          <h1 style={{ fontFamily: "'Pretendard Variable', 'Pretendard', sans-serif", fontSize: 30, fontWeight: 800, letterSpacing: '-.02em' }}>병의원 정보 검색</h1>
           <div style={{ fontSize: 12, color: '#6B7280', marginTop: 8 }}>심평원 공공데이터 기반 · 병원명으로 검색하세요</div>
         </div>
 
@@ -237,7 +237,7 @@ export default function DashboardHospitalInfo({ isAdmin }) {
                 {/* 신규 개설 병원 */}
                 <div>
                   <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 12 }}>
-                    <span style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 17, fontWeight: 700 }}>🆕 최근 30일 신규 개설 병의원</span>
+                    <span style={{ fontFamily: "'Pretendard Variable', 'Pretendard', sans-serif", fontSize: 17, fontWeight: 700 }}>🆕 최근 30일 신규 개설 병의원</span>
                     <span style={{ fontSize: 12, color: '#6B7280' }}>{(cache.newlyOpened || []).length}개</span>
                   </div>
                   {(cache.newlyOpened || []).length === 0 ? (
