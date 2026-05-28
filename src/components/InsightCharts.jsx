@@ -227,14 +227,15 @@ export function LineChart({ series, periods, valueFmt = v => v?.toFixed(1), heig
 }
 
 // ─── 스파크라인 (미니 추세) ─────────────────────────────────────
-export function Sparkline({ values, color = COLORS.primary, width = 80, height = 24 }) {
+export function Sparkline({ values, color = COLORS.primary, width = 80, height = 24, goodHigh = true }) {
   const valid = (values || []).filter(v => v != null);
   if (valid.length < 2) return <span style={{ fontSize: 10, color: '#9CA3AF' }}>—</span>;
   const min = Math.min(...valid), max = Math.max(...valid);
   const span = max - min || 1;
   const xStep = width / (valid.length - 1);
   const path = valid.map((v, i) => `${i === 0 ? 'M' : 'L'} ${(i * xStep).toFixed(1)} ${(height - ((v - min) / span) * (height - 4) - 2).toFixed(1)}`).join(' ');
-  const trend = valid[valid.length - 1] - valid[0];
+  const rawTrend = valid[valid.length - 1] - valid[0];
+  const trend = goodHigh ? rawTrend : -rawTrend; // 역방향 지표(오차율 등)는 감소가 좋음
   const trendColor = trend > 0 ? COLORS.good : trend < 0 ? COLORS.bad : COLORS.neutral;
   return <svg width={width} height={height} style={{ verticalAlign: 'middle' }}>
     <path d={path} fill="none" stroke={trendColor} strokeWidth={1.5} />

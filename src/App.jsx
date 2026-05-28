@@ -16,6 +16,7 @@ import DashboardGlossary from './dashboards/DashboardGlossary';
 import DashboardHospitalInfo from './dashboards/DashboardHospitalInfo';
 import DashboardProductInfo from './dashboards/DashboardProductInfo';
 import DashboardInsights from './dashboards/DashboardInsights';
+import DashboardOrg360 from './dashboards/DashboardOrg360';
 
 import { TASKS } from './config/tasks';
 const EXTRA_TASKS = [
@@ -27,6 +28,7 @@ const EXTRA_TASKS = [
   { id: 'hospital_info', label: '병의원 정보', title: '병의원 정보', badge: '병의원' },
   { id: 'product_info', label: '품목 정보', title: '품목 정보', badge: '품목' },
   { id: 'insights', label: '인사이트 리포트', title: '인사이트 리포트', badge: '인사이트' },
+  { id: 'org360', label: '조직 360도 뷰', title: '조직 360도 뷰', badge: '조직360' },
 ];
 const TASK_META = Object.fromEntries([...TASKS, ...EXTRA_TASKS].map(t => [t.id, t]));
 
@@ -41,7 +43,7 @@ export default function App() {
   const handleAdminLogout = useCallback(() => { setIsAdmin(false); setShowAdminModal(false); }, []);
 
   const meta = TASK_META[activeTask] || TASKS[0];
-  const hasDashboard = ['home', 'hospital110', 'hospital2nd', 'new_product', 'sop', 'mbo_system', 'pool_dongdo', 'customer_stage', 'direct_sales', 'perf_local', 'perf_hospital', 'glossary', 'hospital_info', 'product_info', 'insights'].includes(activeTask);
+  const hasDashboard = ['home', 'hospital110', 'hospital2nd', 'new_product', 'sop', 'mbo_system', 'pool_dongdo', 'customer_stage', 'direct_sales', 'perf_local', 'perf_hospital', 'glossary', 'hospital_info', 'product_info', 'insights', 'org360'].includes(activeTask);
   const isHome = activeTask === 'home';
 
   return (
@@ -144,6 +146,7 @@ export default function App() {
             {activeTask === 'hospital_info' && <DashboardHospitalInfo isAdmin={isAdmin} />}
             {activeTask === 'product_info' && <DashboardProductInfo />}
             {activeTask === 'insights' && <DashboardInsights />}
+            {activeTask === 'org360' && <DashboardOrg360 />}
             {!hasDashboard && (
               <div className="flex flex-col items-center justify-center py-28 text-center">
                 <div className="text-6xl mb-5">🧩</div>

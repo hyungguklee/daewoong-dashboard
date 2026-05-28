@@ -105,6 +105,22 @@ export default function Sidebar({ activeTask, onTaskChange, period, onPeriodChan
             )}
           </button>
 
+          {/* 조직 360도 뷰 버튼 */}
+          <button
+            onClick={() => { onTaskChange('org360'); onMobileClose?.(); }}
+            className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left transition-all mb-2 ${
+              activeTask === 'org360'
+                ? 'bg-[#F59E0B]/15 text-[#F59E0B]'
+                : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white'
+            }`}
+          >
+            <span className="text-sm">🔎</span>
+            <span className="text-xs font-semibold leading-tight">조직 360도 뷰</span>
+            {activeTask === 'org360' && (
+              <span className="ml-auto w-1.5 h-1.5 rounded-full bg-[#F59E0B] flex-shrink-0" />
+            )}
+          </button>
+
           {/* 용어사전 버튼 */}
           <button
             onClick={() => { onTaskChange('glossary'); onMobileClose?.(); }}
