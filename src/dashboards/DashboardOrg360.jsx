@@ -68,14 +68,17 @@ const fmtMetric = (m, v) => {
 
 const taskBucket = t => t.bucket || (['h110', 'h2nd'].includes(t.kind) ? 'hospital' : null);
 
-// 백분위 (0~1): bucket 내 같은 과제 사무소 중 위치
+// 백분위 (0~1): bucket 내 같은 과제 사무소들의 "실제 지표값" 기준 상대 위치
+// 동점은 공정하게 중간값 처리 (countBelow + 0.5*countEqual) / n
 function percentileOf(value, allValues, goodHigh) {
   if (value == null) return null;
-  const arr = allValues.filter(v => v != null).sort((a, b) => a - b);
+  const arr = allValues.filter(v => v != null);
   if (arr.length < 3) return null;
-  const idx = arr.findIndex(v => v >= value);
-  const rank = idx === -1 ? 1 : idx / Math.max(1, arr.length - 1);
-  return goodHigh ? rank : 1 - rank;
+  const below = arr.filter(v => v < value).length;
+  const equal = arr.filter(v => v === value).length;
+  const rank = (below + 0.5 * equal) / arr.length; // 0~1
+  const clamped = Math.max(0, Math.min(1, rank));
+  return goodHigh ? clamped : 1 - clamped;
 }
 
 export default function DashboardOrg360() {

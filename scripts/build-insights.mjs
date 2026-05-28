@@ -484,12 +484,15 @@ function buildCrossScores(facts, bucket) {
       if (t.kind === 'perf') return o.growthRate;
       return null;
     };
-    const rates = filteredOffices.map(getRate).filter(v => v != null).sort((a,b) => a-b);
+    const rates = filteredOffices.map(getRate).filter(v => v != null);
     if (rates.length < 3) continue;
+    // 실제 지표값 기준 백분위 (동점 공정 처리). 모든 과제는 "높을수록 우수"로 정규화됨
+    // (오차율 같은 역지표는 cross 점수에 쓰지 않으므로 그대로 둠)
     const pctOf = r => {
       if (r == null) return null;
-      const idx = rates.findIndex(x => x >= r);
-      return idx === -1 ? 1 : idx / Math.max(1, rates.length - 1);
+      const below = rates.filter(x => x < r).length;
+      const equal = rates.filter(x => x === r).length;
+      return (below + 0.5 * equal) / rates.length;
     };
     for (const o of filteredOffices) {
       const r = getRate(o); if (r == null) continue;
