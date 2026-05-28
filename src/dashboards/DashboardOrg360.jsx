@@ -72,6 +72,24 @@ const taskBucket = t => t.bucket || (['h110', 'h2nd'].includes(t.kind) ? 'hospit
 // 표기 흔들림(접미사, 공백)을 흡수해 동일 조직으로 병합
 const normUnit = s => (s || '').replace(/사무소$/, '').replace(/사업부$/, '').replace(/\s+/g, '').trim();
 
+// 등급 표기: Ap→A+, Bp→B+, Cp→C+ (과제 목록과 동일하게)
+const fmtGrade = g => g ? String(g).replace(/p$/i, '+') : g;
+
+// 프로트랙(병원본부)·MS(로컬본부)는 사업부가 아니라 사무소로 취급.
+// "병원본부(프로트랙)", "프로트랙사무소", "서울3(MS)", "MS" 등 모든 표기를 흡수.
+function specialOfficeName(division, office) {
+  const s = `${division || ''} ${office || ''}`;
+  if (s.includes('프로트랙')) return '프로트랙';
+  if (/MS/.test(s)) return 'MS';
+  return null;
+}
+// 조직 단위 해석: 특수 사무소면 {division:'', office:특수명}, 아니면 정규화 div/off
+function resolveUnit(division, office) {
+  const sp = specialOfficeName(division, office);
+  if (sp) return { division: '', office: sp };
+  return { division: normUnit(division), office: normUnit(office) };
+}
+
 // 백분위 (0~1): bucket 내 같은 과제 사무소들의 "실제 지표값" 기준 상대 위치
 // 동점은 공정하게 중간값 처리 (countBelow + 0.5*countEqual) / n
 function percentileOf(value, allValues, goodHigh) {
@@ -113,8 +131,8 @@ export default function DashboardOrg360() {
       for (const p of (t.periods || [])) {
         for (const o of (t.series?.[p]?.offices || [])) {
           if (!o.office) continue;
-          const nd = normUnit(o.division);
-          const no = normUnit(o.office);
+          const { division: nd, office: no } = resolveUnit(o.division, o.office);
+          if (!no) continue;
           const key = `${bk}::${nd}::${no}`;
           if (!map[key]) map[key] = { division: nd, office: no, bucket: bk, manager: o.manager || '' };
           if (o.manager && !map[key].manager) map[key].manager = o.manager;
@@ -147,8 +165,11 @@ export default function DashboardOrg360() {
       const def = METRICS[t.kind];
       if (!def) continue;
       const periods = t.periods || [];
-      // 사무소의 기간별 데이터 (정규화 비교로 표기 흔들림 흡수)
-      const findOffice = p => (t.series?.[p]?.offices || []).find(o => normUnit(o.division) === selected.division && normUnit(o.office) === selected.office);
+      // 사무소의 기간별 데이터 (정규화·특수사무소 해석으로 표기 흔들림 흡수)
+      const findOffice = p => (t.series?.[p]?.offices || []).find(o => {
+        const r = resolveUnit(o.division, o.office);
+        return r.division === selected.division && r.office === selected.office;
+      });
       const latestP = periods[periods.length - 1];
       const latestO = latestP ? findOffice(latestP) : null;
       if (!latestO) continue; // 이 과제에 해당 사무소 데이터 없음
@@ -188,8 +209,8 @@ export default function DashboardOrg360() {
       for (const p of periods) {
         const byDiv = {};
         for (const o of (t.series?.[p]?.offices || [])) {
-          const nd = normUnit(o.division);
-          if (!nd) continue;
+          const { division: nd } = resolveUnit(o.division, o.office);
+          if (!nd) continue; // 프로트랙/MS 등 특수 사무소는 사업부 집계에서 제외
           const v = o[primary.key];
           if (v == null) continue;
           (byDiv[nd] = byDiv[nd] || []).push(v);
@@ -321,7 +342,7 @@ export default function DashboardOrg360() {
           <div style={{ background: '#fff', border: '1px solid #E5E7EB', borderRadius: 12, padding: 18, marginBottom: 14 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 12 }}>
               <div>
-                <div style={{ fontSize: 11, color: '#6B7280' }}>{selected.bucket === 'hospital' ? '병원본부' : '로컬본부'} · {selected.division?.replace(/사업부$/, '')}</div>
+                <div style={{ fontSize: 11, color: '#6B7280' }}>{selected.bucket === 'hospital' ? '병원본부' : '로컬본부'}{selected.division ? ` · ${selected.division}` : ''}</div>
                 <div style={{ fontSize: 22, fontWeight: 800, color: '#111' }}>{selected.office}</div>
                 {selected.manager && <div style={{ fontSize: 12, color: '#6B7280', marginTop: 2 }}>소장 {selected.manager}</div>}
               </div>
@@ -370,7 +391,7 @@ export default function DashboardOrg360() {
                       </span>
                     )}
                     {d.grade && (
-                      <span style={{ fontSize: 11, fontWeight: 800, color: '#fff', background: gradeColor(d.grade), padding: '2px 9px', borderRadius: 10 }}>{d.grade}</span>
+                      <span style={{ fontSize: 11, fontWeight: 800, color: '#fff', background: gradeColor(d.grade), padding: '2px 9px', borderRadius: 10 }}>{fmtGrade(d.grade)}</span>
                     )}
                   </div>
                 </div>
