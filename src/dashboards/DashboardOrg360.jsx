@@ -68,6 +68,10 @@ const fmtMetric = (m, v) => {
 
 const taskBucket = t => t.bucket || (['h110', 'h2nd'].includes(t.kind) ? 'hospital' : null);
 
+// 사무소/사업부 이름 정규화: "병원경인사무소"=="병원경인", "서울1사업부"=="서울1"
+// 표기 흔들림(접미사, 공백)을 흡수해 동일 조직으로 병합
+const normUnit = s => (s || '').replace(/사무소$/, '').replace(/사업부$/, '').replace(/\s+/g, '').trim();
+
 // 백분위 (0~1): bucket 내 같은 과제 사무소들의 "실제 지표값" 기준 상대 위치
 // 동점은 공정하게 중간값 처리 (countBelow + 0.5*countEqual) / n
 function percentileOf(value, allValues, goodHigh) {
@@ -109,8 +113,10 @@ export default function DashboardOrg360() {
       for (const p of (t.periods || [])) {
         for (const o of (t.series?.[p]?.offices || [])) {
           if (!o.office) continue;
-          const key = `${bk}::${o.division}::${o.office}`;
-          if (!map[key]) map[key] = { division: o.division, office: o.office, bucket: bk, manager: o.manager || '' };
+          const nd = normUnit(o.division);
+          const no = normUnit(o.office);
+          const key = `${bk}::${nd}::${no}`;
+          if (!map[key]) map[key] = { division: nd, office: no, bucket: bk, manager: o.manager || '' };
           if (o.manager && !map[key].manager) map[key].manager = o.manager;
         }
       }
@@ -141,8 +147,8 @@ export default function DashboardOrg360() {
       const def = METRICS[t.kind];
       if (!def) continue;
       const periods = t.periods || [];
-      // 사무소의 기간별 데이터
-      const findOffice = p => (t.series?.[p]?.offices || []).find(o => o.division === selected.division && o.office === selected.office);
+      // 사무소의 기간별 데이터 (정규화 비교로 표기 흔들림 흡수)
+      const findOffice = p => (t.series?.[p]?.offices || []).find(o => normUnit(o.division) === selected.division && normUnit(o.office) === selected.office);
       const latestP = periods[periods.length - 1];
       const latestO = latestP ? findOffice(latestP) : null;
       if (!latestO) continue; // 이 과제에 해당 사무소 데이터 없음
@@ -167,6 +173,47 @@ export default function DashboardOrg360() {
     }
     return result;
   }, [facts, selected]);
+
+  // 사업부별 종합 (현재 본부의 4개 사업부 × 과제 핵심지표 평균 추세)
+  const divisionData = useMemo(() => {
+    if (!facts?.tasks) return null;
+    const divs = {}; // normDiv -> { division, tasks: { taskId: { label, kind, primary, byPeriod, periods } } }
+    for (const t of facts.tasks) {
+      if (t.kind === 'sop') continue;
+      const bk = taskBucket(t);
+      if (bk !== bucketTab) continue;
+      const def = METRICS[t.kind]; if (!def) continue;
+      const primary = def.items.find(m => m.primary) || def.items[0];
+      const periods = t.periods || [];
+      for (const p of periods) {
+        const byDiv = {};
+        for (const o of (t.series?.[p]?.offices || [])) {
+          const nd = normUnit(o.division);
+          if (!nd) continue;
+          const v = o[primary.key];
+          if (v == null) continue;
+          (byDiv[nd] = byDiv[nd] || []).push(v);
+        }
+        for (const [nd, arr] of Object.entries(byDiv)) {
+          divs[nd] = divs[nd] || { division: nd, tasks: {} };
+          const tk = divs[nd].tasks[t.id] = divs[nd].tasks[t.id] || { label: t.label, kind: t.kind, primary, periods, byPeriod: {} };
+          // 사업부 값 = 소속 사무소 핵심지표 평균 (비율형 지표 기준)
+          tk.byPeriod[p] = arr.reduce((s, x) => s + x, 0) / arr.length;
+        }
+      }
+    }
+    // 정렬: 사업부명 / 각 과제 trend 배열 변환
+    return Object.values(divs)
+      .sort((a, b) => a.division.localeCompare(b.division, 'ko'))
+      .map(d => ({
+        division: d.division,
+        tasks: Object.values(d.tasks).map(tk => ({
+          ...tk,
+          trend: tk.periods.map(p => tk.byPeriod[p] ?? null),
+          latest: tk.byPeriod[tk.periods[tk.periods.length - 1]] ?? null,
+        })),
+      }));
+  }, [facts, bucketTab]);
 
   // 강점/약점
   const summary = useMemo(() => {
@@ -235,10 +282,35 @@ export default function DashboardOrg360() {
         </div>
       </div>
 
+      {/* 사업부별 종합 (4개 사업부) */}
+      {divisionData && divisionData.length > 0 && (
+        <div style={{ marginBottom: 14 }}>
+          <div style={{ fontSize: 13, fontWeight: 800, color: '#1A3A6B', marginBottom: 8 }}>
+            🏢 {bucketTab === 'hospital' ? '병원본부' : '로컬본부'} 사업부별 종합 <span style={{ fontSize: 11, fontWeight: 500, color: '#9CA3AF' }}>· 소속 사무소 핵심지표 평균 (1~3월 추세)</span>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 12 }}>
+            {divisionData.map(d => (
+              <div key={d.division} style={{ background: '#fff', border: '1px solid #E5E7EB', borderRadius: 10, padding: 14 }}>
+                <div style={{ fontSize: 14, fontWeight: 800, color: '#111', marginBottom: 8, paddingBottom: 6, borderBottom: '2px solid #1A3A6B' }}>{d.division}</div>
+                {d.tasks.map(tk => (
+                  <div key={tk.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '4px 0', borderTop: '1px solid #F3F4F6' }}>
+                    <span style={{ fontSize: 11.5, color: '#6B7280' }}>{tk.label.split('(')[0].trim()} · {tk.primary.label}</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <Sparkline values={tk.trend} goodHigh={tk.primary.goodHigh} width={56} height={18} />
+                      <span style={{ fontSize: 13, fontWeight: 700, color: '#1F2937', minWidth: 54, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{fmtMetric(tk.primary, tk.latest)}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* 선택 안 됨 안내 */}
       {!selected && (
-        <div style={{ textAlign: 'center', padding: '40px 0', color: '#9CA3AF', fontSize: 13 }}>
-          위에서 사무소를 선택하면 전 과제 종합 카드가 표시됩니다.
+        <div style={{ textAlign: 'center', padding: '24px 0', color: '#9CA3AF', fontSize: 13 }}>
+          위에서 사무소를 선택하면 해당 사무소의 전 과제 종합 카드가 표시됩니다.
         </div>
       )}
 
