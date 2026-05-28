@@ -23,8 +23,12 @@ if (existsSync(join(root, 'netlify', 'functions'))) {
   cpSync(join(root, 'netlify', 'functions'), fnDest, { recursive: true });
 }
 
-// === Cloudflare Pages용 ===
-// functions/ 폴더를 dist 루트로 복사 → 파일 기반 라우팅(/api/X) 활성화
+// === Cloudflare 새 통합 시스템 (Workers + Static Assets)용 ===
+// _worker.js를 dist 루트로 복사 → 단일 진입점으로 /api/* 라우팅
+if (existsSync(join(root, '_worker.js'))) {
+  copyFileSync(join(root, '_worker.js'), join(dist, '_worker.js'));
+}
+// === 구 Cloudflare Pages용 (호환) ===
 if (existsSync(join(root, 'functions'))) {
   const cfDest = join(dist, 'functions');
   mkdirSync(cfDest, { recursive: true });
