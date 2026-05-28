@@ -175,7 +175,10 @@ export default function DashboardOrg360() {
       if (!latestO) continue; // 이 과제에 해당 사무소 데이터 없음
 
       const primary = def.items.find(m => m.primary) || def.items[0];
-      const allLatest = (t.series?.[latestP]?.offices || []).map(o => o[primary.key]);
+      // 백분위 풀: 특수 사무소(프로트랙/MS) 제외 (교차분석 방식과 동일)
+      const allLatest = (t.series?.[latestP]?.offices || [])
+        .filter(o => !specialOfficeName(o.division, o.office))
+        .map(o => o[primary.key]);
       const primPct = percentileOf(latestO[primary.key], allLatest, primary.goodHigh);
 
       const metrics = def.items.map(m => ({
@@ -236,6 +239,50 @@ export default function DashboardOrg360() {
       }));
   }, [facts, bucketTab]);
 
+  // 전 사무소 교차분석 종합점수 (현재 본부, 모든 과제 핵심지표 백분위 평균)
+  const officeScores = useMemo(() => {
+    if (!facts?.tasks) return {};
+    const acc = {}; // 'div::off' -> { division, office, sum, count }
+    for (const t of facts.tasks) {
+      if (t.kind === 'sop') continue;
+      const bk = taskBucket(t);
+      if (bk !== bucketTab) continue;
+      const def = METRICS[t.kind]; if (!def) continue;
+      const primary = def.items.find(m => m.primary) || def.items[0];
+      const periods = t.periods || [];
+      const latestP = periods[periods.length - 1];
+      if (!latestP) continue;
+      const offices = t.series?.[latestP]?.offices || [];
+      // 풀: 특수 사무소 제외
+      const pool = offices.filter(o => !specialOfficeName(o.division, o.office)).map(o => o[primary.key]);
+      for (const o of offices) {
+        const { division: nd, office: no } = resolveUnit(o.division, o.office);
+        if (!no) continue;
+        const pctl = percentileOf(o[primary.key], pool, primary.goodHigh);
+        if (pctl == null) continue;
+        const key = `${nd}::${no}`;
+        acc[key] = acc[key] || { division: nd, office: no, sum: 0, count: 0 };
+        acc[key].sum += pctl;
+        acc[key].count += 1;
+      }
+    }
+    const out = {};
+    for (const [k, v] of Object.entries(acc)) out[k] = { ...v, score: v.count ? v.sum / v.count : null };
+    return out;
+  }, [facts, bucketTab]);
+
+  // 사업부별 소속 사무소 (종합점수 내림차순)
+  const officesByDivision = useMemo(() => {
+    const m = {};
+    for (const o of officeList) {
+      if (!o.division) continue; // 특수 사무소(프로트랙/MS)는 사업부 없음 → 제외
+      const sc = officeScores[`${o.division}::${o.office}`];
+      (m[o.division] = m[o.division] || []).push({ ...o, score: sc?.score ?? null });
+    }
+    for (const div of Object.keys(m)) m[div].sort((a, b) => (b.score ?? -1) - (a.score ?? -1));
+    return m;
+  }, [officeList, officeScores]);
+
   // 강점/약점
   const summary = useMemo(() => {
     if (!orgData) return null;
@@ -288,7 +335,7 @@ export default function DashboardOrg360() {
           onBlur={e => e.target.style.borderColor = '#E5E7EB'}
         />
         {/* 사무소 선택 칩 */}
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 10, maxHeight: selected ? 0 : 200, overflow: 'auto', transition: 'max-height .2s' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 10, maxHeight: 200, overflow: 'auto' }}>
           {filtered.map(o => {
             const key = `${o.division}::${o.office}`;
             const isSel = selected && selected.division === o.division && selected.office === o.office;
@@ -322,6 +369,31 @@ export default function DashboardOrg360() {
                     </div>
                   </div>
                 ))}
+
+                {/* 소속 사무소 종합점수 랭킹 */}
+                {officesByDivision[d.division]?.length > 0 && (
+                  <div style={{ marginTop: 10, paddingTop: 8, borderTop: '2px dashed #E5E7EB' }}>
+                    <div style={{ fontSize: 10, fontWeight: 700, color: '#6B7280', marginBottom: 6, letterSpacing: '.03em' }}>소속 사무소 · 교차분석 종합점수</div>
+                    {officesByDivision[d.division].map((o, i) => {
+                      const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i + 1}`;
+                      const isSel = selected && selected.division === o.division && selected.office === o.office;
+                      return (
+                        <button key={o.office} onClick={() => setSelected(o)}
+                          style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8,
+                                   padding: '5px 8px', marginBottom: 2, border: 'none', borderRadius: 6, cursor: 'pointer',
+                                   background: isSel ? '#1A3A6B' : (i < 3 ? '#FFFBEB' : '#F9FAFB'), color: isSel ? '#fff' : '#1F2937', textAlign: 'left' }}>
+                          <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, minWidth: 0 }}>
+                            <span style={{ width: 18, textAlign: 'center', fontWeight: 700, fontSize: i < 3 ? 13 : 11, color: isSel ? '#fff' : '#9CA3AF' }}>{medal}</span>
+                            <span style={{ fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{o.office}{o.manager ? ` · ${o.manager}` : ''}</span>
+                          </span>
+                          <span style={{ fontSize: 12, fontWeight: 800, fontVariantNumeric: 'tabular-nums', color: isSel ? '#fff' : (o.score >= 0.6 ? C.good : o.score <= 0.4 ? C.bad : '#374151') }}>
+                            {o.score != null ? (o.score * 100).toFixed(0) + '점' : '-'}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             ))}
           </div>
