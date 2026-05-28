@@ -594,36 +594,23 @@ function CrossAnalysisChart({ cross }) {
   );
 }
 
-// AI 본문 inline 버전 (Section 래퍼 없이 흰 박스로)
-function CrossAnalysisInline({ cross }) {
+// AI 본문 inline 버전 (Section 래퍼 없이 흰 박스로) — bucket: 'all'|'hospital'|'local'
+function CrossAnalysisInline({ cross, bucket = 'all' }) {
   if (!cross?.hospital && !cross?.local) return null;
 
   const renderBucket = (bucketKey, label) => {
+    if (bucket !== 'all' && bucket !== bucketKey) return null;
     const c = cross[bucketKey];
     if (!c || (!c.top5?.length && !c.bot5?.length)) return null;
-
-    const taskSet = new Set();
-    [...(c.top5 || []), ...(c.bot5 || [])].forEach(o => (o.contribs || []).forEach(c2 => taskSet.add(c2.task)));
-    const tasks = Array.from(taskSet);
 
     const divBars = (c.divisions || []).map(d => ({ label: d.name?.replace(/사업부$/,''), value: d.avg, color: heatColor(d.avg) }));
     const top5Bars = (c.top5 || []).map(o => ({ label: (o.office || o.division).replace(/사무소$/,''), value: o.avg, color: C.good }));
     const bot5Bars = (c.bot5 || []).map(o => ({ label: (o.office || o.division).replace(/사무소$/,''), value: o.avg, color: C.bad }));
 
-    const heatOffices = [
-      ...(c.top5 || []).map(o => ({ ...o, group: 'TOP' })),
-      ...(c.bot5 || []).map(o => ({ ...o, group: 'BOTTOM' })),
-    ];
-    const heatRows = heatOffices.map(o => ({ label: `${o.group === 'TOP' ? '🏆' : '⚠️'} ${(o.office || o.division).replace(/사무소$/,'')}`, o }));
-    const heatGet = (row, col) => {
-      const contrib = (row.o.contribs || []).find(c2 => c2.task === col);
-      return contrib ? contrib.pct : null;
-    };
-
     return (
       <div style={{ marginBottom: 14 }}>
         <div style={{ fontSize: 12.5, fontWeight: 800, color: '#92400E', marginBottom: 8, paddingLeft: 4 }}>📊 {label} — 시각 근거</div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 12, marginBottom: 10 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 12 }}>
           {divBars.length > 0 && (
             <div>
               <div style={{ fontSize: 10, fontWeight: 700, color: '#374151', marginBottom: 4 }}>사업부 종합 점수</div>
@@ -639,13 +626,6 @@ function CrossAnalysisInline({ cross }) {
             <HBar data={bot5Bars} valueFmt={v => (v*100).toFixed(0) + '점'} color={C.bad} />
           </div>
         </div>
-        {tasks.length > 0 && heatRows.length > 0 && (
-          <div>
-            <div style={{ fontSize: 10, fontWeight: 700, color: '#374151', marginBottom: 4 }}>과제별 강약 히트맵 (TOP5 + BOTTOM5)</div>
-            <Heatmap rows={heatRows} cols={tasks} getValue={heatGet}
-              valueFmt={v => v == null ? '-' : (v*100).toFixed(0)} label="백분위" goodHigh={true} cellSize={46} />
-          </div>
-        )}
       </div>
     );
   };
@@ -716,9 +696,9 @@ function PerfTrendChart({ facts }) {
   );
 }
 
-// AI 본문 inline 버전 — 프로트랙/MS 제외, 사무소 이름 정리
-function PerfTrendInline({ facts }) {
-  const perfs = (facts.tasks || []).filter(t => t.kind === 'perf');
+// AI 본문 inline 버전 — 프로트랙/MS 제외, 사무소 이름 정리. bucket: 'all'|'hospital'|'local'
+function PerfTrendInline({ facts, bucket = 'all' }) {
+  const perfs = (facts.tasks || []).filter(t => t.kind === 'perf' && (bucket === 'all' || t.bucket === bucket));
   if (!perfs.length) return null;
   const SPECIAL = ['프로트랙', 'MS'];
   const stripOff = s => (s || '').replace(/사무소$/,'');
@@ -774,7 +754,7 @@ function PerfTrendInline({ facts }) {
 // ═══════════════════════════════════════════════════════════════
 // AI 제언 본문 렌더러 — 섹션 1 끝에 교차분석 차트, 섹션 2 끝에 실적 차트 inline 삽입
 // ═══════════════════════════════════════════════════════════════
-function AIReportBody({ text, facts }) {
+function AIReportBody({ text, facts, bucket = 'all' }) {
   // 라인을 섹션으로 나눔. 섹션 키 = "## N." 의 N
   const lines = text.split('\n');
   const blocks = []; // { sectionNum: number|null, lines: [] }
@@ -796,6 +776,33 @@ function AIReportBody({ text, facts }) {
   }
   flush();
 
+  // 본부 필터: 선택한 본부의 ### 서브섹션만 남김
+  const want = bucket === 'hospital' ? '병원본부' : bucket === 'local' ? '로컬본부' : null;
+  const other = bucket === 'hospital' ? '로컬본부' : bucket === 'local' ? '병원본부' : null;
+
+  const filterBlock = (block) => {
+    if (!want) return block; // 전체
+    const header = block.lines[0] || '';
+    // 110대병원/2차병원 섹션은 병원본부 전용 → 로컬 선택 시 통째로 숨김
+    if (bucket === 'local' && /110대|2차병원|\(병원본부\)/.test(header)) return null;
+    // ### 본부 서브섹션 단위로 필터
+    let cur = null; // 현재 서브섹션 본부
+    const kept = [];
+    for (const line of block.lines) {
+      const sub = line.match(/^###\s*(병원본부|로컬본부)/);
+      if (sub) { cur = sub[1]; if (cur === other) continue; kept.push(line); continue; }
+      if (cur === other) continue; // 반대 본부 본문 제거
+      kept.push(line);
+    }
+    // 헤더만 남고 본문이 사실상 없으면(서브섹션 분리형인데 해당 본부 내용 없음) 숨김
+    const hasBody = kept.some((l, idx) => idx > 0 && l.trim() && !/^###/.test(l));
+    const hadSub = block.lines.some(l => /^###\s*(병원본부|로컬본부)/.test(l));
+    if (hadSub && !hasBody) return null;
+    return { ...block, lines: kept };
+  };
+
+  const visibleBlocks = blocks.map(filterBlock).filter(Boolean);
+
   const renderLine = (line, i) => {
     if (/^#\s+(이번\s*달\s*영업전략|AI\s*지휘\s*제언|영업전략\s*보고)/.test(line)) return null;
     if (line.startsWith('## ')) return <div key={i} style={{ fontSize: 15, fontWeight: 800, color: '#92400E', marginTop: 18, marginBottom: 6, paddingBottom: 4, borderBottom: '2px solid #FCD34D' }}>{line.slice(3)}</div>;
@@ -807,11 +814,11 @@ function AIReportBody({ text, facts }) {
 
   return (
     <div style={{ background: '#FFFBEB', border: '1px solid #FCD34D', borderRadius: 8, padding: 16, fontSize: 13, lineHeight: 1.8, color: '#1F2937', whiteSpace: 'pre-wrap' }}>
-      {blocks.map((b, bi) => (
+      {visibleBlocks.map((b, bi) => (
         <div key={bi}>
           {b.lines.map(renderLine)}
-          {b.sectionNum === 1 && facts.crossAnalysis && <CrossAnalysisInline cross={facts.crossAnalysis} />}
-          {b.sectionNum === 2 && <PerfTrendInline facts={facts} />}
+          {b.sectionNum === 1 && facts.crossAnalysis && <CrossAnalysisInline cross={facts.crossAnalysis} bucket={bucket} />}
+          {b.sectionNum === 2 && <PerfTrendInline facts={facts} bucket={bucket} />}
         </div>
       ))}
     </div>
@@ -894,7 +901,7 @@ export default function DashboardInsights() {
       {/* AI 제언 — 섹션 1·2 뒤에 시각화 inline 삽입 */}
       {report?.text && (
         <Section title="AI 제언" icon="🤖" subtitle={report.updatedAt ? `갱신 ${new Date(report.updatedAt).toLocaleString('ko-KR')}` : null} accent={C.accent}>
-          <AIReportBody text={report.text} facts={facts} />
+          <AIReportBody text={report.text} facts={facts} bucket={tab} />
         </Section>
       )}
 
